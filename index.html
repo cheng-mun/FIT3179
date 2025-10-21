@@ -215,64 +215,64 @@ Air Pollution in Malaysia (2017–2022)</h1>
   "height": 230,
 
   "params": [
-  {
-    "name": "zoom_level",
-    "value": 1900,
-    "bind": {
-      "input": "range",
-      "min": 1000,
-      "max": 7000,
-      "step": 100,
-      "name": "Zoom: "
+    {
+      "name": "zoom_level",
+      "value": 1900,
+      "bind": {
+        "input": "range",
+        "min": 1000,
+        "max": 7000,
+        "step": 100,
+        "name": "Zoom: "
+      }
+    },
+    {
+      "name": "center_to",
+      "value": [109, 4],
+      "bind": {
+        "input": "select",
+        "options": [
+          [109, 4],       
+          [101.7, 3.15],  
+          [101.7, 2.92], 
+          [115.2, 1.27], 
+          [100.8, 1.5],  
+          [100.3, 6.1],  
+          [100.4, 6.1],  
+          [102.0, 5.3],  
+          [102.3, 2.8],  
+          [102.5, 4.2],   
+          [101.1, 4.7],   
+          [100.3, 5.4],   
+          [116.1, 5.9],   
+          [113.0, 1.5],   
+          [102.8, 2.2],   
+          [101.5, 3.0],   
+          [103.3, 5.0]    
+        ],
+        "labels": [
+          "Malaysia (Full View)",
+          "Kuala Lumpur (FT)",
+          "Putrajaya (FT)",
+          "Labuan (FT)",
+          "Johor",
+          "Perlis",
+          "Kedah",
+          "Kelantan",
+          "Negeri Sembilan",
+          "Pahang",
+          "Perak",
+          "Pulau Pinang",
+          "Sabah",
+          "Sarawak",
+          "Melaka",
+          "Selangor",
+          "Terengganu"
+        ],
+        "name": "Map Centre: "
+      }
     }
-  },
-  {
-    "name": "center_to",
-    "value": [109, 4],
-    "bind": {
-      "input": "select",
-      "options": [
-        [109, 4],       
-        [101.7, 3.15],  
-        [101.7, 2.92], 
-        [115.2, 1.27], 
-        [100.8, 1.5],  
-        [100.3, 6.1],  
-        [100.4, 6.1],  
-        [102.0, 5.3],  
-        [102.3, 2.8],  
-        [102.5, 4.2],   
-        [101.1, 4.7],   
-        [100.3, 5.4],   
-        [116.1, 5.9],   
-        [113.0, 1.5],   
-        [102.8, 2.2],   
-        [101.5, 3.0],   
-        [103.3, 5.0]    
-      ],
-      "labels": [
-        "Malaysia (Full View)",
-        "Kuala Lumpur (FT)",
-        "Putrajaya (FT)",
-        "Labuan (FT)",
-        "Johor",
-        "Perlis",
-        "Kedah",
-        "Kelantan",
-        "Negeri Sembilan",
-        "Pahang",
-        "Perak",
-        "Pulau Pinang",
-        "Sabah",
-        "Sarawak",
-        "Melaka",
-        "Selangor",
-        "Terengganu"
-      ],
-      "name": "Map Centre: "
-    }
-  }
-],
+  ],
 
   "projection": {
     "type": "mercator",
@@ -306,32 +306,28 @@ Air Pollution in Malaysia (2017–2022)</h1>
             "key": "state",
             "fields": ["avg_api"]
           }
-        },
-        {
-          "calculate": "datum.avg_api < 40 ? 'Low (≤40)' : datum.avg_api < 50 ? 'Moderate (41–50)' : 'High (>50)'",
-          "as": "category"
         }
       ],
       "mark": {"type": "geoshape", "stroke": "#ffffff", "strokeWidth": 0.7},
       "encoding": {
         "color": {
-          "field": "category",
-          "type": "nominal",
-          "title": "Air Quality Category",
+          "field": "avg_api",
+          "type": "quantitative",
+          "title": "Average API",
           "scale": {
-            "domain": ["Low (≤40)", "Moderate (41–50)", "High (>50)"],
-            "range": ["#f7d5b2", "#fdae6b", "#e6550d"]
+            "type": "linear",
+            "domain": [30, 60],
+            "range": ["#fefbe9", "#d7301f"]
           },
           "legend": {
             "orient": "right",
             "titleFontSize": 12,
-            "labelFontSize": 10,
+            "labelFontSize": 10
           }
         },
         "tooltip": [
           {"field": "properties.name", "title": "State"},
-          {"field": "avg_api", "title": "Average API", "format": ".2f"},
-          {"field": "category", "title": "Air Quality"}
+          {"field": "avg_api", "title": "Average API", "format": ".2f"}
         ]
       }
     },
@@ -356,7 +352,7 @@ Air Pollution in Malaysia (2017–2022)</h1>
       "data": {
         "values": [
           {
-            "text": "Categories: Low (≤40) = Clean air | Moderate (41–50) = Acceptable | High (>50) = Polluted"
+            "text": "Color: Light → Dark = Clean → Polluted"
           }
         ]
       },
@@ -485,10 +481,6 @@ Air Pollution in Malaysia (2017–2022)</h1>
         "Terengganu", "Kelantan", "Perlis", "Sarawak", "Sabah", "Labuan"
       ],
       "as": ["State", "API"]
-    },
-    {
-      "calculate": "datum.API <= 40 ? 'Low (≤40)' : datum.API <= 50 ? 'Moderate (41–50)' : 'High (>50)'",
-      "as": "category"
     }
   ],
   "mark": "rect",
@@ -506,12 +498,13 @@ Air Pollution in Malaysia (2017–2022)</h1>
       "axis": {"labelAngle": 0}
     },
     "color": {
-      "field": "category",
-      "type": "nominal",
-      "title": "Air Quality Category",
+      "field": "API",
+      "type": "quantitative",
+      "title": "Average API",
       "scale": {
-        "domain": ["Low (≤40)", "Moderate (41–50)", "High (>50)"],
-        "range": ["#f7d5b2", "#fdae6b", "#e6550d"]
+        "type": "linear",
+        "domain": [30, 60],
+        "range": ["#fefbe9", "#d7301f"]
       },
       "legend": {
         "orient": "right",
@@ -524,8 +517,7 @@ Air Pollution in Malaysia (2017–2022)</h1>
     "tooltip": [
       {"field": "State", "type": "nominal"},
       {"field": "Year", "type": "ordinal", "title": "Year"},
-      {"field": "API", "type": "quantitative", "aggregate": "mean", "title": "Average API", "format": ".2f"},
-      {"field": "category", "type": "nominal", "title": "Air Quality"}
+      {"field": "API", "type": "quantitative", "aggregate": "mean", "title": "Average API", "format": ".2f"}
     ]
   },
   "config": {
@@ -540,8 +532,7 @@ Air Pollution in Malaysia (2017–2022)</h1>
       "stroke": "transparent"
     }
   }
-}
-;
+};
     vegaEmbed('#vis3', spec3, { actions: false }).catch(console.error);
 
     // Vis 4: Line Chart
