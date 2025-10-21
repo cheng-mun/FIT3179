@@ -1,68 +1,778 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/vega@5.22.1"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.2.0"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.20.8"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Malaysia Air Pollution Dashboard</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f7f6;
+      color: #333;
+    }
+
+    header {
+      background: #005f73;
+      color: #fff;
+      padding: 1.5em 3em;
+      border-bottom: 4px solid #0a9396;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.2em;
+      font-weight: 600;
+    }
+
+    main {
+      padding: 0em 3em;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    section {
+      margin-bottom: 3em;
+    }
+
+    h2 {
+      font-family: 'Times New Roman', serif;
+      margin-top: 2em;
+      color: #005f73;
+      border-left: 5px solid #0a9396;
+      padding-left: 0.6em;
+      font-size: 1.6em;
+      font-weight: 600;
+    }
+
+    /* Chart + analysis blocks */
+    .chart-analysis-row {
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 2em;
+      margin-top: 1.5em;
+      flex-wrap: wrap;
+      max-width: 1300px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Combined charts blocks */
+    .chart-wrapper {
+      flex: 1 1 65%;
+      background: #fff;
+      padding: 1.5em;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 2em;
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 500px;
+    }
+
+    /* Ensure all charts same width*/
+    .chart-wrapper > div {
+      width: 100%;
+    }
+
+    .analysis-wrapper {
+      flex: 1 1 30%;
+      background-color: #e2f0fa;
+      border-left: 5px solid #0077b6;
+      padding: 1.5em;
+      border-radius: 8px;
+      line-height: 1.6;
+      color: #495057;
+      min-width: 280px;
+      max-width: 500px;
+      box-sizing: border-box;
+    }
+
+    /* Responsive adjusts */
+    @media (max-width: 1200px) {
+      .chart-analysis-row {
+        flex-direction: column;
+      }
+      .chart-wrapper,
+      .analysis-wrapper,
+      .intro-conclusion-wrapper {
+        width: 100%;
+      }
+    }
+
+  footer.metadata {
+  text-align: center;
+  font-size: 13px;
+  color: #555;
+  padding-right: 270px;
+}
+
+  </style>
 </head>
 <body>
-  <div id="vis"></div>
+
+  <header>
+    <h1 style="font-family: 'Times New Roman', serif; padding-left: 20px;">
+Air Pollution in Malaysia (2017–2022)</h1>
+  </header>
+
+  <main>
+
+    <!-- map + lollipop chart -->
+    <section>
+      <h2>Where is Air Pollution Highest? A Geographic and Ranked Overview</h2>
+      <div class="chart-analysis-row">
+        <div class="chart-wrapper">
+          <div id="vis1"></div>
+          <div id="vis2"></div>
+        </div>
+        <div class="analysis-wrapper">
+          <strong>The West Coast "Industrial Corridor"</strong><br><br>
+          The map’s hotspot on the central-west coast is confirmed as <strong>Selangor</strong>, the state that anchors Malaysia’s primary economic corridor.<br><br>
+          This region shows how economic activity and pollution often go hand in hand: 
+          citizens in the Klang Valley breathe significantly poorer air than those in other states, 
+          underscoring the environmental cost of industrial concentration.
+
+          <br><br>
+          <strong>The "Natural Capital" of East Malaysia</strong><br><br>
+          In contrast, <strong>Sabah</strong> and <strong>Sarawak</strong> exhibit the cleanest air, reflecting their vast forest cover and lower industrial density. <br><br>
+          Their strong environmental baseline raises a vital question: 
+          can East Malaysia achieve economic growth without following the high-pollution model seen in Selangor?
+        </div>
+      </div>
+    </section>
+
+    <!-- heatmap -->
+    <section>
+      <h2>How Have Pollution Levels Changed Over Time? An Annual View</h2>
+      <div class="chart-analysis-row">
+        <div class="chart-wrapper">
+          <div id="vis3"></div>
+        </div>
+        <div class="analysis-wrapper">
+          <strong>Air Pollution Knows No Borders</strong><br><br>
+          This chart demonstrates that no state in Malaysia is immune to severe air pollution. 
+          Even states with strong environmental policies, zero deforestation, and no heavy industry 
+          can experience hazardous air quality. 
+
+          <br><br>
+          <strong>Geography and Weather Matter</strong><br><br>
+          The culprit is not always local industry. Malaysia’s geographic location and prevailing monsoon winds 
+          place the country directly in the path of transboundary smoke, often from nearby regions. 
+
+          <br><br>
+          <strong>Policy Implications</strong><br><br>
+          While local policies help manage normal air quality, addressing extreme pollution events requires 
+          international cooperation and diplomacy to stop fires at the source.
+        </div>
+      </div>
+    </section>
+
+    <!-- line chart and small multiples -->
+    <section>
+      <h2>A Closer Look at Pollutants and the 2019 Haze Event</h2>
+      <div class="chart-analysis-row">
+        <div class="chart-wrapper">
+          <div id="vis4"></div>
+          <div id="vis5"></div>
+        </div>
+        <div class="analysis-wrapper">
+          <strong>Acute Event: September 2019</strong><br><br>
+          The small multiples chart reveals that air quality remained stable until June, then concentrations of pollutants strongly linked to haze such as PM2.5 and PM10 began rising sharply.
+
+          <br><br>
+          <strong>Transboundary Smoke: External Source</strong><br><br>
+          PM10 and PM2.5 moved in perfect unison, indicating a single massive source: forest fires from neighboring regions carried by monsoon winds.
+
+          <br><br>
+          <strong>Overwhelming Effect on States</strong><br><br>
+          Both "clean" states (Sabah, Sarawak) and already "polluted" states (Selangor) were affected. The haze temporarily overrode local air quality differences, showing the severity of this external event.
+        </div>
+      </div>
+    </section>
+  </main>
+
   <script>
-    const spec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-      "title": "Average Air Pollution Index(API) in Malaysia",
-      "width": 700,
-      "height": 400,
-      "projection": {"type": "equalEarth"},
-      "layer": [
+    // Vis 1: Map
+    const spec1 = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Average Air Pollution Index (API) in Malaysia, 2017–2022",
+    "anchor": "left",
+    "fontSize": 16,
+    "fontWeight": "bold"
+  },
+  "background": "#ceeaff",
+  "width": 680,
+  "height": 230,
+
+  "params": [
+  {
+    "name": "zoom_level",
+    "value": 1900,
+    "bind": {
+      "input": "range",
+      "min": 1000,
+      "max": 7000,
+      "step": 100,
+      "name": "Zoom: "
+    }
+  },
+  {
+    "name": "center_to",
+    "value": [109, 4],
+    "bind": {
+      "input": "select",
+      "options": [
+        [109, 4],       
+        [101.7, 3.15],  
+        [101.7, 2.92], 
+        [115.2, 1.27], 
+        [100.8, 1.5],  
+        [100.3, 6.1],  
+        [100.4, 6.1],  
+        [102.0, 5.3],  
+        [102.3, 2.8],  
+        [102.5, 4.2],   
+        [101.1, 4.7],   
+        [100.3, 5.4],   
+        [116.1, 5.9],   
+        [113.0, 1.5],   
+        [102.8, 2.2],   
+        [101.5, 3.0],   
+        [103.3, 5.0]    
+      ],
+      "labels": [
+        "Malaysia (Full View)",
+        "Kuala Lumpur (FT)",
+        "Putrajaya (FT)",
+        "Labuan (FT)",
+        "Johor",
+        "Perlis",
+        "Kedah",
+        "Kelantan",
+        "Negeri Sembilan",
+        "Pahang",
+        "Perak",
+        "Pulau Pinang",
+        "Sabah",
+        "Sarawak",
+        "Melaka",
+        "Selangor",
+        "Terengganu"
+      ],
+      "name": "Map Centre: "
+    }
+  }
+],
+
+  "projection": {
+    "type": "mercator",
+    "center": {"expr": "center_to"},
+    "scale": {"expr": "zoom_level"}
+  },
+
+  "layer": [
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/3_choropleth_map/js/ne_110m_admin_0_countries.topojson",
+        "format": {
+          "type": "topojson",
+          "feature": "ne_110m_admin_0_countries"
+        }
+      },
+      "mark": {"type": "geoshape", "fill": "white", "stroke": "white"}
+    },
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/cheng-mun/FIT3179/main/File%20for%20map/malaysia_state.geojson",
+        "format": {"type": "json", "property": "features"}
+      },
+      "transform": [
         {
-          "data": {
-            "url": "https://raw.githubusercontent.com/cheng-mun/FIT3179/main/File%20for%20map/malaysia_state.geojson",
-            "format": {"type": "json", "property": "features"}
-          },
-          "transform": [
-            {
-              "lookup": "properties.name",
-              "from": {
-                "data": {
-                  "url": "https://raw.githubusercontent.com/cheng-mun/FIT3179/main/File%20for%20map/avg_api_by_state.csv",
-                  "format": {"type": "csv"}
-                },
-                "key": "state",
-                "fields": ["avg_api"]
-              }
-            }
-          ],
-          "mark": {"type": "geoshape"},
-          "encoding": {
-            "color": {
-              "field": "avg_api",
-              "type": "quantitative",
-              "title": "Average API"
+          "lookup": "properties.name",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/cheng-mun/FIT3179/main/File%20for%20map/avg_api_by_state.csv"
             },
-            "tooltip": [
-              {"field": "properties.name", "type": "nominal", "title": "State"},
-              {"field": "avg_api", "type": "quantitative", "title": "Average API"}
-            ]
+            "key": "state",
+            "fields": ["avg_api"]
           }
         },
         {
-          "data": {
-            "graticule": {
-              "extent": [[100, 0.5], [120, 7.5]],
-              "step": [2, 2]
-            }
-          },
-          "mark": {
-            "type": "geoshape",
-            "stroke": "lightgray",
-            "strokeWidth": 0.5
-          }
+          "calculate": "datum.avg_api < 40 ? 'Low (≤40)' : datum.avg_api < 50 ? 'Moderate (41–50)' : 'High (>50)'",
+          "as": "category"
         }
-      ]
-    };
+      ],
+      "mark": {"type": "geoshape", "stroke": "#ffffff", "strokeWidth": 0.7},
+      "encoding": {
+        "color": {
+          "field": "category",
+          "type": "nominal",
+          "title": "Air Quality Category",
+          "scale": {
+            "domain": ["Low (≤40)", "Moderate (41–50)", "High (>50)"],
+            "range": ["#f7d5b2", "#fdae6b", "#e6550d"]
+          },
+          "legend": {
+            "orient": "right",
+            "titleFontSize": 12,
+            "labelFontSize": 10,
+          }
+        },
+        "tooltip": [
+          {"field": "properties.name", "title": "State"},
+          {"field": "avg_api", "title": "Average API", "format": ".2f"},
+          {"field": "category", "title": "Air Quality"}
+        ]
+      }
+    },
+    {
+      "data": {
+        "graticule": {
+          "extent": [[90, -10], [130, 15]],
+          "step": [2, 2]
+        }
+      },
+      "mark": {"type": "geoshape", "stroke": "#33333337", "strokeWidth": 0.5}
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "x": 10,
+        "y": 250,
+        "fontSize": 10,
+        "color": "#333"
+      },
+      "data": {
+        "values": [
+          {
+            "text": "Categories: Low (≤40) = Clean air | Moderate (41–50) = Acceptable | High (>50) = Polluted"
+          }
+        ]
+      },
+      "encoding": {"text": {"field": "text"}}
+    }
+  ]
+};
+    vegaEmbed('#vis1', spec1, { actions: false }).catch(console.error);
 
-    vegaEmbed("#vis", spec, {mode: "vega-lite"}).then(console.log).catch(console.warn);
+    // Vis 2: Lollipop Chart
+    const spec2 = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+      "text": "Average Air Pollution Index (API) by State, 2017-2022",
+      "fontSize": 16,
+      "fontWeight": "bold",
+      "anchor": "left"
+    },
+  "height": 250,
+  "width": 580,
+  "data": {
+    "url": "https://raw.githubusercontent.com/cheng-mun/FIT3179/main/File%20for%20map/avg_api_by_state.csv"
+  },
+  "transform": [
+    {
+      "window": [{"op": "rank", "as": "rank_desc"}],
+      "sort": [{"field": "avg_api", "order": "descending"}]
+    },
+    {
+      "window": [{"op": "rank", "as": "rank_asc"}],
+      "sort": [{"field": "avg_api", "order": "ascending"}]
+    }
+  ],
+  "encoding": {
+    "y": {
+      "field": "state",
+      "type": "nominal",
+      "title": "State",
+      "sort": "-x"
+    },
+    "x": {"field": "avg_api", "type": "quantitative", "title": "Average API"},
+    "color": {
+      "condition": [
+        {"test": "datum.rank_desc <= 1", "value": "#d62828"},
+        {"test": "datum.rank_asc <= 2", "value": "#0077b6"}
+      ],
+      "value": "#adb5bd"
+    },
+    "tooltip": [
+      {"field": "state", "type": "nominal"},
+      {
+        "field": "avg_api",
+        "type": "quantitative",
+        "format": ".2f",
+        "title": "Average API"
+      }
+    ]
+  },
+  "layer": [
+    {"mark": "rule"},
+    {"mark": {"type": "circle", "size": 100}},
+    {
+      "data": {"values": [{}]},
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "color": "#d62828",
+        "lineBreak": "\n"
+      },
+      "encoding": {
+        "x": {"value": 495},
+        "y": {"value": 21},
+        "text": {
+          "value": "Selangor: Industrialised Klang Valley"
+        },
+        "color": "#d62828",
+        "tooltip": null
+      }
+    },
+    {
+      "data": {"values": [{}]},
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "color": "#0077b6",
+        "lineBreak": "\n"
+      },
+      "encoding": {
+        "x": {"value": 490},
+        "y": {"value": 235},
+        "text": {
+          "value": "Sabah & Sarawak: Low density, vast forests"
+        },
+        "color": "#0077b6",
+        "tooltip": null
+      }
+    }
+  ],
+  "config": {
+    "axis": {"grid": false},
+    "view": {"stroke": null},
+    "legend": {"disable": true}
+  }
+};
+    vegaEmbed('#vis2', spec2, { actions: false }).catch(console.error);
+
+    // Vis 3: Heatmap
+    const spec3 = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Annual Air Pollution Index (API) by State, 2017–2022",
+    "fontSize": 16,
+    "fontWeight": "bold",
+    "anchor": "left"
+  },
+  "width": 500,
+  "height": 500,
+  "data": {
+    "url": "https://raw.githubusercontent.com/cheng-mun/Personal-Project/main/FIT3179%20Project%20Datasets/APIMS_2017_2022_annual_avg_by_state.csv"
+  },
+  "transform": [
+    {
+      "fold": [
+        "Melaka", "Kedah", "Pulau Pinang", "Johor", "Kuala Lumpur", 
+        "Putrajaya", "Selangor", "Perak", "Negeri Sembilan", "Pahang", 
+        "Terengganu", "Kelantan", "Perlis", "Sarawak", "Sabah", "Labuan"
+      ],
+      "as": ["State", "API"]
+    },
+    {
+      "calculate": "datum.API <= 40 ? 'Low (≤40)' : datum.API <= 50 ? 'Moderate (41–50)' : 'High (>50)'",
+      "as": "category"
+    }
+  ],
+  "mark": "rect",
+  "encoding": {
+    "y": {
+      "field": "State",
+      "type": "nominal",
+      "sort": "-x",
+      "title": "State"
+    },
+    "x": {
+      "field": "Year",
+      "type": "ordinal",
+      "title": "Year",
+      "axis": {"labelAngle": 0}
+    },
+    "color": {
+      "field": "category",
+      "type": "nominal",
+      "title": "Air Quality Category",
+      "scale": {
+        "domain": ["Low (≤40)", "Moderate (41–50)", "High (>50)"],
+        "range": ["#f7d5b2", "#fdae6b", "#e6550d"]
+      },
+      "legend": {
+        "orient": "right",
+        "titleFontSize": 12,
+        "labelFontSize": 10,
+        "titleColor": "#333",
+        "labelColor": "#333"
+      }
+    },
+    "tooltip": [
+      {"field": "State", "type": "nominal"},
+      {"field": "Year", "type": "ordinal", "title": "Year"},
+      {"field": "API", "type": "quantitative", "aggregate": "mean", "title": "Average API", "format": ".2f"},
+      {"field": "category", "type": "nominal", "title": "Air Quality"}
+    ]
+  },
+  "config": {
+    "axis": {
+      "grid": true,
+      "tickBand": "extent",
+      "labelFontSize": 12,
+      "titleFontSize": 13,
+      "gridColor": "white"
+    },
+    "view": {
+      "stroke": "transparent"
+    }
+  }
+}
+;
+    vegaEmbed('#vis3', spec3, { actions: false }).catch(console.error);
+
+    // Vis 4: Line Chart
+    const spec4 = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "url": "https://raw.githubusercontent.com/cheng-mun/Personal-Project/main/FIT3179%20Project%20Datasets/air_pollution.csv"
+  },
+  "transform": [
+    {"calculate": "toDate(datum.date)", "as": "parsed_date"},
+    {"calculate": "year(datum.parsed_date)", "as": "year"},
+    {
+      "aggregate": [
+        {"op": "mean", "field": "concentration", "as": "avg_concentration"}
+      ],
+      "groupby": ["year", "pollutant"]
+    }
+  ],
+  "params": [
+    {
+      "name": "pollutant_selection",
+      "value": "PM 10",
+      "bind": {
+        "input": "select",
+        "options": ["PM 10", "PM 2.5"],
+        "labels": ["PM 10", "PM 2.5"],
+        "name": "Select pollutant: "
+      }
+    }
+  ],
+  "width": 700,
+  "height": 250,
+    "title": {
+      "text": "Yearly Average Air Pollutant Concentrations (2017–2022)",
+      "fontSize": 16,
+      "fontWeight": "bold",
+      "anchor": "middle"
+    },
+  "layer": [
+    {
+      "transform": [{"filter": "datum.pollutant == pollutant_selection"}],
+      "mark": {"type": "line", "point": true, "interpolate": "monotone"},
+      "encoding": {
+        "x": {
+          "field": "year",
+          "type": "quantitative",
+          "title": "Year",
+          "scale": {"domain": [2017, 2022]},
+          "axis": {"tickMinStep": 1, "format": "d", "grid": false}
+        },
+        "y": {
+          "field": "avg_concentration",
+          "type": "quantitative",
+          "title": "Average Concentration (µg/m³)",
+          "axis": {"grid": false}
+        },
+        "color": {
+          "field": "pollutant",
+          "type": "nominal",
+          "title": "Pollutant",
+          "legend": null,
+          "scale": { "domain": ["PM 10", "PM 2.5"], "range": ["#1f77b4", "#f58518"]}
+        },
+        "tooltip": [
+          {"field": "year", "title": "Year"},
+          {"field": "pollutant", "title": "Pollutant"},
+          {
+            "field": "avg_concentration",
+            "title": "Average Concentration (µg/m³)",
+            "format": ".2f"
+          }
+        ]
+      }
+    },
+    {
+      "mark": {"type": "rule", "color": "red", "strokeDash": [4, 4]},
+      "encoding": {"x": {"datum": 2019}}
+    },
+{
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "top",
+        "dx": 5,
+        "dy": 5,
+        "color": "red",
+        "fontSize": 12
+      },
+      "encoding": {
+        "x": {"value": 90},
+        "y": {"value": 100},
+        "text": {"value": "2019: Southeast Asian haze"}
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "top",
+        "dx": 5,
+        "dy": 5,
+        "color": "grey",
+        "fontSize": 11
+      },
+      "encoding": {
+        "x": {"value": 310},
+        "y": {"value": 150},
+        "text": {"value": "From 2018, PM10 increased by 17% and PM2.5 increased by 26%"}
+      }
+    }
+  ],
+  "config": {}
+};
+    vegaEmbed('#vis4', spec4, { actions: false }).catch(console.error);
+
+    // Vis 5: Small Multiples
+    const spec5 = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+      "text": "Monthly Air Pollutant Concentration (2019)",
+      "fontSize": 16,
+      "fontWeight": "Bold",
+      "anchor": "middle"
+    },
+  "data": {
+    "url": "https://raw.githubusercontent.com/cheng-mun/Personal-Project/main/FIT3179%20Project%20Datasets/air_pollutants_full_months.csv"
+  },
+  "transform": [
+    {"filter": "datum.pollutant == 'PM 10' || datum.pollutant == 'PM 2.5'"},
+    {"filter": "toNumber(datum.year) == 2019"},
+    {
+      "calculate": "indexof(['January','February','March','April','May','June','July','August','September','October','November','December'], datum.month)",
+      "as": "month_index"
+    }
+  ],
+  "facet": {
+    "field": "pollutant",
+    "type": "nominal",
+    "header": {"title": "", "labelFontSize": 12}
+  },
+  "spec": {
+    "width": 325,
+    "height": 225,
+    "encoding": {
+      "x": {
+        "field": "month_index",
+        "type": "ordinal",
+        "axis": {
+          "labelExpr": "['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][datum.value]",
+          "labelAngle": 0,
+          "title": "Month"
+        }
+      },
+      "y": {
+        "field": "normalized_concentration",
+        "type": "quantitative",
+        "title": "Concentration (µg/m³)",
+        "scale": {"zero": true},
+        "axis": {"grid": false}
+      },
+      "tooltip": [
+        {"field": "pollutant", "type": "nominal", "title": "Pollutant"},
+        {"field": "month", "type": "ordinal", "title": "Month"},
+        {"field": "normalized_concentration", "type": "quantitative", "title": "Concentration (µg/m³)",
+        "format": ".2f"}
+      ]
+    },
+    "layer": [
+      {
+        "mark": {"type": "line", "interpolate": "monotone", "strokeWidth": 3},
+        "encoding": {
+          "color": {"field": "pollutant", "type": "nominal", "legend": null}
+        }
+      },
+      {
+        "mark": {"type": "point", "filled": true, "size": 80},
+        "encoding": {
+          "color": {"field": "pollutant", "type": "nominal", "legend": null}
+        }
+      },
+      {
+        "transform": [{"filter": "datum.month == 'September'"}],
+        "mark": {"type": "rule", "color": "red", "strokeWidth": 2},
+        "encoding": {
+          "x": {"field": "month_index", "type": "ordinal"}
+        }
+      },
+      {
+        "transform": [{"filter": "datum.month == 'September'"}],
+        "mark": {"type": "point", "filled": true, "size": 150, "color": "red"},
+        "encoding": {
+          "y": {"field": "normalized_concentration", "type": "quantitative"}
+        }
+      },
+      {
+        "mark": {
+          "type": "text",
+          "align": "center",
+          "color": "red",
+          "fontSize": 10
+        },
+        "encoding": {
+          "x": {"datum": 4},  
+          "y": {"value": 4}, 
+          "text": {"value": "Increased by 63 - 70% from lowest point"}
+        }
+      }
+    ]
+  },
+  "resolve": {"scale": {"y": "independent"}},
+  "config": {
+    "background": "white",
+    "axis": {"labelColor": "black", "titleColor": "black"},
+    "legend": {"labelColor": "black", "titleColor": "black"},
+    "view": {"stroke": "transparent"}
+  }
+};
+    vegaEmbed('#vis5', spec5, { actions: false }).catch(console.error);
   </script>
+
+<footer class="metadata">
+  <p>
+    Data sources: 
+    <a href="https://www.kaggle.com/datasets/ynshung/malaysia-air-pollution-index" target="_blank">
+      Air Pollution Index (API) in Malaysia
+    </a> by Ng Young Shung, and 
+    <a href="https://open.dosm.gov.my/data-catalogue/air_pollution?pollutant=co&visual=table" target="_blank">
+      Monthly Air Pollution
+    </a> from the Department of Environment and the Department of Statistics Malaysia.
+  </p>
+</footer>
+
 </body>
 </html>
